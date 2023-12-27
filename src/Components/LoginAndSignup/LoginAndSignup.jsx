@@ -4,10 +4,26 @@ import './LoginAndSignup.css';
 const LoginAndSignup = () => {
 
     const [action, setAction] = useState("LOGIN");
+    const [cnfPass, setCnfPass] = useState("");
+    const [signupError, setSignupError] = useState("");
 
     const [loginRequest, setLoginRequest] = useState({
         userId: '',
         password: ''
+    });
+
+    const handleCnfPassChange = (event) => {
+        const newValue = event.target.value;
+        setCnfPass(newValue);
+      };
+
+    const [signupRequest, setSignupRequest] = useState({
+        clientName : '',
+        mailId : '',
+        businessName : '',
+        role : '',
+        userId : '',
+        password : ''
     });
  
     const handleFormSubmit = async (event) => {
@@ -29,10 +45,38 @@ const LoginAndSignup = () => {
     }
     };
 
+    const handleSignupFormSubmit = async (event) => {
+        event.preventDefault();
+        console.log(JSON.stringify(signupRequest));
+        console.log(cnfPass);
+        if(cnfPass === signupRequest.password){
+            const response = await fetch('http://localhost:8080/signup', {
+            method: 'POST',
+            body: JSON.stringify(signupRequest),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            });
+            const result = await response.json();
+            console.log(result.response);
+            setSignupError(result.response)
+        }else{
+            setSignupError("Your Password are not matching. Please Check.")
+        }
+    };
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setLoginRequest((prevLoginRequest) => ({
             ...prevLoginRequest,
+            [name]: value,
+        }));
+    };
+
+    const handlesignupChange = (event) => {
+        const { name, value } = event.target;
+        setSignupRequest((prevSignupRequest) => ({
+            ...prevSignupRequest,
             [name]: value,
         }));
     };
@@ -59,40 +103,41 @@ const LoginAndSignup = () => {
     <input id="submit-btn" type="submit" name="login" value="LOGIN" />
     <span className='info' onClick={() => setAction("SignUp")}>Don't have account yet?</span>
   </form> : 
-  <form method="post" className="form">
-  <label htmlFor="user-name">&nbsp;Full Name</label>
-  <input id="user-name" className="form-content" type="text" name="fullname" autocomplete="on" required />
+  <form method="post" className="form" onSubmit={handleSignupFormSubmit}>
+  <label htmlFor="clientName">&nbsp;Full Name</label>
+  <input id="clientName" className="form-content" type="text" name="clientName" autoComplete="on" value={signupRequest.clientName} onChange={handlesignupChange} required />
   <div className="form-border"></div>
-  <label htmlFor="user-mail" >&nbsp;Mail Id</label>
-  <input id="user-mail" className="form-content" type="email" name="email" required />
+  <label htmlFor="mailId" >&nbsp;Mail Id</label>
+  <input id="mailId" className="form-content" type="email" name="mailId" value={signupRequest.mailId} onChange={handlesignupChange} required />
   <div className="form-border"></div>
-  <label htmlFor="user-id">&nbsp;User Id</label>
-  <input id="user-id" className="form-content" type="text" name="username" autocomplete="on" value='' required />
+  <label htmlFor="userId">&nbsp;User Id</label>
+  <input id="userId" className="form-content" type="text" name="userId" autoComplete="on" value={signupRequest.userId} onChange={handlesignupChange} required />
   <div className="form-border"></div>
-  <label htmlFor="user-buisness" >&nbsp;Buisness Name</label>
-  <select className="form-content" name="buisnessname" id="user-buisness">
-    <option value="Buisness 1">Buisness 1</option>
-    <option value="Buisness 2">Shoe Store</option>
-    <option value="Buisness 3">Clothes Store</option>
-    <option value="Buisness 4">Fashion Store</option>
+  <label htmlFor="businessName" >&nbsp;Buisness Name</label>
+  <select className="form-content" name="businessName" id="businessName" value={signupRequest.businessName} onClick={handlesignupChange}>
+    <option id='Buisness 1' name= 'Buisness 1' value="Buisness 1">Buisness 1</option>
+    <option id='Buisness 2' name= 'Buisness 2' value="Buisness 2">Shoe Store</option>
+    <option id='Buisness 3' name= 'Buisness 3' value="Buisness 3">Clothes Store</option>
+    <option id='Buisness 4' name= 'Buisness 4' value="Buisness 4">Fashion Store</option>
 </select>
   <div className="form-border"></div>
   <label htmlFor="user-buisness" >&nbsp;Role</label>
-  <select className="form-content" name="buisnessname" id="user-buisness">
-    <option value="Manager">Manager</option>
-    <option value="Accountant">Accountant</option>
-    <option value="Employee">Employee</option>
+  <select className="form-content" name="role" id="role" value={signupRequest.role} onClick={handlesignupChange}>
+    <option id='Manager' name= 'Manager' value="Manager">Manager</option>
+    <option id='Accountant' name= 'Accountant' value="Accountant">Accountant</option>
+    <option id='Employee' name= 'Employee' value="Employee">Employee</option>
 </select>
   <div className="form-border"></div>
   <label htmlFor="user-password">&nbsp;Password</label>
-  <input id="user-password" className="form-content" type="password" name="password" autocomplete="on" required />
+  <input id="user-password" className="form-content" type="password" name="password" value={signupRequest.password} onChange={handlesignupChange} autoComplete="on" required />
   <div className="form-border"></div>
   <label htmlFor="user-cnfpass">&nbsp;Confirm Password</label>
-  <input id="user-cnfpass" className="form-content" type="cnfpass" name="cnfpass" autocomplete="on" required />
+  <input id="user-cnfpass" className="form-content" value={cnfPass} onChange={handleCnfPassChange} type="password" name="cnfpass" autoComplete="on" required />
   <div className="form-border"></div>
+  <span>{signupError}</span>
   <input id="submit-btn" type="submit" name="submit" value="SignUp" />
   <span className='info' onClick={() => setAction("LOGIN")}>Click to login</span>
-</form>
+</form> 
 }
 </div>
 </div>
