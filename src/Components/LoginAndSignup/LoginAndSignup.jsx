@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import './LoginAndSignup.css';
+import { useNavigate } from 'react-router-dom';
 
 const LoginAndSignup = () => {
 
     const [action, setAction] = useState("LOGIN");
     const [cnfPass, setCnfPass] = useState("");
     const [signupError, setSignupError] = useState("");
+    const navigate = useNavigate();
 
     const [loginRequest, setLoginRequest] = useState({
         userId: '',
@@ -41,7 +43,14 @@ const LoginAndSignup = () => {
         console.log('result.response');
         alert(result.response);
     }else{
-        alert(result.response);
+        if(result.role === 'BMS_OWNER')
+            navigate('/owner-home');
+        if(result.role === 'BMS_MANAGER')
+            navigate('/mgr-home');
+        if(result.role === 'BMS_ACCOUNTANT')
+            navigate('/acc-home');
+        if(response.role === 'BMS_EXICUTIVE')
+            navigate('/exc-home')
     }
     };
 
